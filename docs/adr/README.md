@@ -10,6 +10,7 @@ These ADRs document the load-bearing design choices behind UTM-Jax. They're orde
 | 004 | [TPU Deployment Pipeline](ADR_004_Deployment.md) | Accepted |
 | 005 | [RoPE with independent indices](ADR_005_RoPE.md) | Accepted |
 | 006 | [Baseline Hyperparameters](ADR_006_Baseline_Hyperparameters.md) | Accepted |
+| 008 | [QK-Norm, Decoupled QKV, Split-Clip Optimizer Topology](ADR_008_QKNorm_and_Muon_Topology.md) | Accepted |
 | 011 | [Graves ACT Gradient Implementation](ADR_011_Graves_ACT_Gradient.md) | Accepted |
 | 013 | [ACT Router Initialization Bias](ADR_013_Router_Init_Bias.md) | Accepted |
 | 014 | [Deep-Start Router Default](ADR_014_Deep_Start_Default.md) | Accepted |

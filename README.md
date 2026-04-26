@@ -135,6 +135,7 @@ The `docs/adr/` directory contains the design decisions in chronological order. 
 - [ADR 004 — TPU Deployment](docs/adr/ADR_004_Deployment.md)
 - [ADR 005 — RoPE with independent indices](docs/adr/ADR_005_RoPE.md)
 - [ADR 006 — Baseline hyperparameters](docs/adr/ADR_006_Baseline_Hyperparameters.md)
+- [ADR 008 — QK-norm, decoupled QKV, split-clip optimizer topology](docs/adr/ADR_008_QKNorm_and_Muon_Topology.md)
 - [ADR 011 — Graves ACT gradient implementation](docs/adr/ADR_011_Graves_ACT_Gradient.md)
 - [ADR 013 — ACT router initialization bias](docs/adr/ADR_013_Router_Init_Bias.md)
 - [ADR 014 — Deep-start router default](docs/adr/ADR_014_Deep_Start_Default.md)
