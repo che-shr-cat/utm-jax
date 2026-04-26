@@ -10,13 +10,13 @@ After implementing the UT block and validating it locally, we needed to pick a c
 - **TRM** — Jolicoeur-Martineau 2025, *Less is More: Recursive Reasoning with Tiny Networks* ([arXiv:2510.04871](https://arxiv.org/abs/2510.04871), [code](https://github.com/SamsungSAILMontreal/TinyRecursiveModels)). ~5–19M params, ~42 effective layers via nested recursion. Notable for high accuracy with a small parameter footprint and EMA-heavy training.
 - **HRM** — Wang et al. 2025, *Hierarchical Reasoning Model* ([arXiv:2506.21734](https://arxiv.org/abs/2506.21734), [code](https://github.com/sapientinc/HRM)). ~27M params, two specialized modules (high-level slow + low-level fast) with ACT up to 16 steps.
 
-Our architecture is a single deep-recursion UT (closer to TRM than HRM) with memory tokens added (ADR 003). We compared three width settings:
+Our architecture is a single deep-recursion UT (closer to TRM than HRM) with memory tokens added (ADR 003). The width was chosen on paper by comparing parameter footprints at three candidate sizes — no head-to-head training runs at 128 or 384:
 
-| Hidden size | Heads | Params (parameter-shared UT) |
-|-------------|-------|------------------------------|
-| 128         | 4     | 0.21M (likely underfit)      |
-| 384         | 12    | 1.80M                        |
-| **512**     | **8** | **3.18M** (matches TRM range)|
+| Hidden size | Heads | Params (parameter-shared UT) | Note                       |
+|-------------|-------|------------------------------|----------------------------|
+| 128         | 4     | 0.21M                        | Likely underfit            |
+| 384         | 12    | 1.80M                        | Lightweight; not pursued   |
+| **512**     | **8** | **3.18M**                    | **Selected — TRM-comparable** |
 
 ## Decision
 
