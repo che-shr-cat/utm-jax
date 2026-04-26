@@ -6,9 +6,9 @@ Accepted
 ## Context
 After implementing the UT block and validating it locally, we needed to pick a configuration for full TPU runs on Sudoku-Extreme (3.83M train / 423K test). We anchored the choice against three recent recursive-reasoning models:
 
-- **URM** (Universal Reasoning Model): ~27M params, 4 layers × 8 inner loops × ACT-16 outer loops.
-- **TRM** (Tiny Recursive Model, Jolicoeur-Martineau 2025, arXiv:2510.04871): ~5–19M params, ~42 effective layers via nested recursion. Notable for high accuracy with a small parameter footprint and EMA-heavy training.
-- **HRM** (Hierarchical Reasoning Model, Wang et al. 2025, arXiv:2506.21734): ~27M params, two specialized modules with ACT up to 16 steps.
+- **URM** — Gao et al. 2025, *Universal Reasoning Model* ([arXiv:2512.14693](https://arxiv.org/abs/2512.14693), [code](https://github.com/UbiquantAI/URM)). ~27M params, 4 layers × 8 inner loops × ACT-16 outer loops. Decoder-only with ConvSwiGLU; uses Truncated Backpropagation Through Loops and the Muon optimizer. Reaches 77.6% on Sudoku without memory tokens — a useful calibration baseline.
+- **TRM** — Jolicoeur-Martineau 2025, *Less is More: Recursive Reasoning with Tiny Networks* ([arXiv:2510.04871](https://arxiv.org/abs/2510.04871), [code](https://github.com/SamsungSAILMontreal/TinyRecursiveModels)). ~5–19M params, ~42 effective layers via nested recursion. Notable for high accuracy with a small parameter footprint and EMA-heavy training.
+- **HRM** — Wang et al. 2025, *Hierarchical Reasoning Model* ([arXiv:2506.21734](https://arxiv.org/abs/2506.21734), [code](https://github.com/sapientinc/HRM)). ~27M params, two specialized modules (high-level slow + low-level fast) with ACT up to 16 steps.
 
 Our architecture is a single deep-recursion UT (closer to TRM than HRM) with memory tokens added (ADR 003). We compared three width settings:
 
