@@ -2,7 +2,7 @@
 
 A JAX/Flax implementation of a **Universal Transformer with Memory Tokens** and Adaptive Computation Time (ACT), built to study depth–state trade-offs in recursive reasoning on algorithmic tasks (Sudoku-Extreme).
 
-This repo accompanies the paper *"Universal Transformers Need Memory: Depth-State Trade-offs in Adaptive Recursive Reasoning"* and is intended as both a reference implementation and a pedagogic asset — every load-bearing design choice is documented in [`docs/adr/`](docs/adr/) so the path from architecture to results can be retraced.
+This repo accompanies the paper [*"Universal Transformers Need Memory: Depth-State Trade-offs in Adaptive Recursive Reasoning"*](https://arxiv.org/abs/2604.21999) and is intended as both a reference implementation and a pedagogic asset — every load-bearing design choice is documented in [`docs/adr/`](docs/adr/) so the path from architecture to results can be retraced.
 
 ## What's interesting here
 
@@ -142,13 +142,29 @@ The `docs/adr/` directory contains the design decisions in chronological order. 
 
 ## Citation
 
+If you use this work, please cite the paper:
+
 ```bibtex
-@misc{utm_jax_2026,
-  author = {Sapunov, Grigory},
-  title  = {UTM-Jax: Universal Transformer with Memory Tokens},
-  year   = {2026},
+@misc{sapunov2026utm,
+  author        = {Sapunov, Grigory},
+  title         = {Universal Transformers Need Memory: Depth-State Trade-offs in Adaptive Recursive Reasoning},
+  year          = {2026},
+  eprint        = {2604.21999},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2604.21999}
+}
+```
+
+And, optionally, the code:
+
+```bibtex
+@software{utm_jax_2026,
+  author    = {Sapunov, Grigory},
+  title     = {UTM-Jax: Universal Transformer with Memory Tokens},
+  year      = {2026},
   publisher = {GitHub},
-  howpublished = {\url{https://github.com/che-shr-cat/utm-jax}}
+  url       = {https://github.com/che-shr-cat/utm-jax}
 }
 ```
 
