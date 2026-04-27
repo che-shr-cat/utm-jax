@@ -9,7 +9,7 @@ This repo accompanies the paper [*"Universal Transformers Need Memory: Depth-Sta
 - **Memory tokens** added to the recurrent loop give the model a positional-invariant scratchpad. Without them, the model fails to solve Sudoku-Extreme in this configuration regardless of depth or seed.
 - **Deep-start router init** (negative bias on the ACT halting head) eliminates a pervasive initialization trap where the router collapses to a 2-step shallow halt and never recovers. See ADR 013 / 014.
 - **Graves ACT gradient correctness**. We initially had a subtle bug where the ponder penalty gradient evaluated to zero; the fix is documented in ADR 011.
-- **Bounded ACT loop** as a Python `for` loop unrolled at JAX trace time, with a fixed `max_ponder_steps` and `jax.where` masking — gives predictable XLA compile graphs at the cost of always running the upper bound. Migration to `jax.lax.scan` is on the table if compile time becomes a real cost (see ADR 001).
+- **Bounded ACT loop** as a Python `for` loop unrolled at JAX trace time, with a fixed `max_ponder_steps` and elementwise masking to freeze halted tokens — gives predictable XLA compile graphs at the cost of always running the upper bound. Migration to `jax.lax.scan` is on the table if compile time becomes a real cost (see ADR 001).
 
 ## Architecture summary
 

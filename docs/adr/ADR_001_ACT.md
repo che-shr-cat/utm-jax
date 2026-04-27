@@ -10,7 +10,7 @@ The Universal Transformer needs a dynamic-depth pondering mechanism so different
 We use a Python `for step in range(max_ponder_steps):` loop inside the model's `__call__`, fully unrolled at JAX trace time, with masking-based halting:
 
 - Every token executes the loop for the full `max_ponder_steps` iterations. Halting is handled analytically rather than by exiting the loop.
-- Once a token's accumulated halting probability reaches `1 - epsilon`, a `jax.where` mask freezes its hidden state for all remaining steps.
+- Once a token's accumulated halting probability reaches `1 - epsilon`, a `jnp.where` mask freezes its hidden state for all remaining steps.
 - The remainder term `R = 1 - sum_{i<halt} p_i` is applied at the halting step only, providing the gradient path required by Graves' ACT formulation.
 - Per-step diagnostics (router `p` mean/std, step weights) are accumulated into Python lists during tracing and emitted as a fixed-size dict — possible only because the loop is unrolled.
 
