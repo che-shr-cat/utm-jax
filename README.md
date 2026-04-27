@@ -9,7 +9,7 @@ This repo accompanies the paper [*"Universal Transformers Need Memory: Depth-Sta
 - **Memory tokens** added to the recurrent loop give the model a positional-invariant scratchpad. Without them, the model fails to solve Sudoku-Extreme in this configuration regardless of depth or seed.
 - **Deep-start router init** (negative bias on the ACT halting head) eliminates a pervasive initialization trap where the router collapses to a 2-step shallow halt and never recovers. See ADR 013 / 014.
 - **Graves ACT gradient correctness**. We initially had a subtle bug where the ponder penalty gradient evaluated to zero; the fix is documented in ADR 011.
-- **Bounded ACT loop** via `jax.lax.scan` with a fixed `max_ponder_steps` and `jax.where` masking — gives predictable XLA compile graphs at the cost of always running the upper bound.
+- **Bounded ACT loop** as a Python `for` loop unrolled at JAX trace time, with a fixed `max_ponder_steps` and `jax.where` masking — gives predictable XLA compile graphs at the cost of always running the upper bound. Migration to `jax.lax.scan` is on the table if compile time becomes a real cost (see ADR 001).
 
 ## Architecture summary
 
@@ -129,7 +129,7 @@ For the full sweep, vary `--num_memory_tokens` over `{0, 8, 16, 32, 64}`.
 
 The `docs/adr/` directory contains the design decisions in chronological order. Numbering has gaps where decisions were superseded or scoped out for v1 — the public set is curated to the choices that survived into the paper.
 
-- [ADR 001 — ACT via bounded `lax.scan`](docs/adr/ADR_001_ACT.md)
+- [ADR 001 — ACT via bounded unrolled loop](docs/adr/ADR_001_ACT.md)
 - [ADR 002 — Norm-Free block + SwiGLU](docs/adr/ADR_002_NormFree_SwiGLU.md)
 - [ADR 003 — Memory Tokens](docs/adr/ADR_003_Memory_Tokens.md)
 - [ADR 004 — TPU Deployment](docs/adr/ADR_004_Deployment.md)
