@@ -4,6 +4,10 @@ A JAX/Flax implementation of a **Universal Transformer with Memory Tokens** and 
 
 This repo accompanies the paper [*"Universal Transformers Need Memory: Depth-State Trade-offs in Adaptive Recursive Reasoning"*](https://arxiv.org/abs/2604.21999) and is intended as both a reference implementation and a pedagogic asset — every load-bearing design choice is documented in [`docs/adr/`](docs/adr/) so the path from architecture to results can be retraced.
 
+**Companion writeups:**
+- [*Universal Transformers Need Memory*](https://arxiviq.substack.com/p/universal-transformers-need-memory) — a walkthrough of the paper itself.
+- [*Why I keep coming back to Universal Transformers*](https://gonzoml.substack.com/p/why-i-keep-coming-back-to-universal) — the broader story behind the idea, the JAX implementation, and the ADR-driven workflow this repo is built on.
+
 ## What's interesting here
 
 - **Memory tokens** added to the recurrent loop give the model a positional-invariant scratchpad. Without them, the model fails to solve Sudoku-Extreme in this configuration regardless of depth or seed.
