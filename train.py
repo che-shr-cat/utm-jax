@@ -31,7 +31,13 @@ def parse_args():
     parser.add_argument("--project_name", type=str, default="tpu-sprint-utm")
     parser.add_argument("--run_name", type=str, default="universal-transformer")
     parser.add_argument("--checkpoint_dir", type=str, default="checkpoints")
-    parser.add_argument("--optimizer", type=str, default="adamw", choices=["adamw", "muon"], help="Swappable optimizer")
+    parser.add_argument("--optimizer", type=str, default="adamw", choices=["adamw", "muon", "adamw_poprisk"], help="Swappable optimizer")
+    parser.add_argument("--poprisk_gate", type=str, default="soft", choices=["hard", "soft", "snr"], help="Population-risk gate variant (Litman & Guo 2026; ADR_016)")
+    parser.add_argument("--poprisk_rho", type=float, default=0.99, help="Gradient-variance EMA decay for poprisk gate")
+    parser.add_argument("--poprisk_alpha", type=float, default=0.0, help="LOO coefficient. Paper §F.4 / eq. 245: 1.0 for fresh-batch / online streaming, b/(n-b) for finite-dataset training. UTM-Sudoku (n~3.8M, b=256) is finite-dataset, so α≈1e-4. Default 0.0 is safe (gate ≈ identity). Setting α=1.0 in finite-dataset regime over-suppresses updates and destabilizes training — see ADR 016 update 2026-05-12.")
+    parser.add_argument("--poprisk_lambda_pop", type=float, default=0.0, help="Population-risk gate sharpness (paper: typically 0 at scale)")
+    parser.add_argument("--poprisk_eps", type=float, default=1e-12, help="Numerical stabiliser in poprisk gate denominator")
+    parser.add_argument("--poprisk_skip_router", action="store_true", help="Hybrid optimizer: route ACT-router params through plain AdamW (no gate), poprisk on everything else. Tests whether the gate's pathology is router-specific (see FINDING_Poprisk_ACT_Incompatibility.md).")
     
     # Model Config
     parser.add_argument("--hidden_size", type=int, default=128)
@@ -332,6 +338,43 @@ def main():
             {"muon": muon_chain, "adamw": adamw_clipped}, 
             create_mask
         )
+    elif args.optimizer.lower() == "adamw_poprisk":
+        from optimizers.poprisk import adamw_poprisk
+
+        poprisk_chain = adamw_poprisk(
+            learning_rate=scheduler,
+            weight_decay=args.weight_decay,
+            rho=args.poprisk_rho,
+            alpha=args.poprisk_alpha,
+            lambda_pop=args.poprisk_lambda_pop,
+            eps_gate=args.poprisk_eps,
+            gate=args.poprisk_gate,
+        )
+
+        if args.poprisk_skip_router:
+            print(f"Note: AdamW-poprisk HYBRID (ADR_016). Router params -> plain AdamW; everything else -> poprisk. gate={args.poprisk_gate}, alpha={args.poprisk_alpha}")
+            adamw_chain = optax.adamw(learning_rate=scheduler, weight_decay=args.weight_decay)
+
+            def label_fn(path, p):
+                path_str = "".join(str(k) for k in path).lower()
+                return "adamw" if "router" in path_str else "adamw_poprisk"
+
+            def create_mask(params):
+                return jax.tree_util.tree_map_with_path(label_fn, params)
+
+            optimizer_def = optax.chain(
+                optax.clip_by_global_norm(args.clip_grad_norm),
+                optax.multi_transform(
+                    {"adamw": adamw_chain, "adamw_poprisk": poprisk_chain},
+                    create_mask,
+                ),
+            )
+        else:
+            print(f"Note: AdamW + population-risk gate (Litman & Guo 2026, ADR_016). gate={args.poprisk_gate}, rho={args.poprisk_rho}, alpha={args.poprisk_alpha}, lambda_pop={args.poprisk_lambda_pop}")
+            optimizer_def = optax.chain(
+                optax.clip_by_global_norm(args.clip_grad_norm),
+                poprisk_chain,
+            )
     else:
         optimizer_def = optax.chain(
             optax.clip_by_global_norm(args.clip_grad_norm),
